@@ -1,0 +1,55 @@
+# 1) Le metajob de vérification de connexion (avant d'exécuter les autres jobs)
+[[jobs]]
+name = "metajob"
+type = "connection"
+#host = "10.0.0.45"
+host = "SRVSIG"
+port = 5432
+retry_interval_min = 10
+
+
+# Récupération du dernier état de la branche main du repo Supervision FLUOW (UI)
+#[[jobs]]
+#name = "git_pull_main"
+#type = "git"
+#repo_dir = "https://github.com/I-Thibaud/prj_supervision_spac"              # or wherever your repo lives, relative to orchestration.py
+#branch   = "main"
+### Il faudrait doubler la partie orchestration pour une mise à jour auto du Git dans le répertoire du projet FLUOW
+
+# 2) Le script Python main.py
+[[jobs]]
+name = "run_python_main"
+type = "python"
+#interpreter = "C:\\_sandbox\\dbt-env\\Scripts\\python.exe"
+#interpreter_lx = "/usr/local/bin/venv_ccpi_dbt/bin/python3"
+script_path = "scripts/main.py"
+
+# 3) Le job dbt
+[[jobs]]
+name = "run_dbt_models"
+type = "dbt"
+cmd = [
+  "dbt", "build",
+  "-m", "stg_topkapi_ccpi__histo_stream+",
+       "stg_topkapi_ccpi__dt_stream+"
+]
+
+# 3.1) Le job dbt sur prod
+[[jobs]]
+name = "run_dbt_prod"
+type = "dbt"
+cmd = [
+  "dbt", "run",
+  "--target", "prod",
+  "--select",
+  "tag:prod"
+]
+
+# 4) Le flow principal, qui référence les trois étapes ci-dessus
+[[jobs]]
+name = "full_flow"
+type = "flow"
+schedule = "daily_at"
+time = "04:00"
+#steps = ["metajob", "git_pull_main", "run_python_main", "run_dbt_models", "run_dbt_prod"]
+steps = ["metajob", "run_python_main", "run_dbt_models"]

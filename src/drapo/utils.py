@@ -94,7 +94,7 @@ def resolve_path(path: str, config: dict) -> str:
     """
     Résout un chemin relatif ou avec des variables à partir d'un dictionnaire de config.
     Exemple :
-        resolve_path("${paths.dbt}", config)
+        resolve_path("${dbt}", config)
     """
     # Si le chemin est absolu, retourne tel quel
     if os.path.isabs(path):
@@ -121,7 +121,7 @@ Module pour charger la configuration d'orchestration depuis un fichier TOML.
 """
 
 def load_orchestration_config(CONFIG,fn: str) -> dict:
-    path = resolve_path("${paths.drapoconfig}",CONFIG)
+    path = resolve_path("${drapoconfig}",CONFIG)
     logging.info("Lecture de la config depuis %s", path)
     with open(path, "r", encoding="utf-8") as f:
         return toml.load(f)
@@ -164,7 +164,7 @@ def setup_logger(CONFIG):
     logger.addHandler(console_h)
 
     # File handler (rotates daily, keeps 30 days)
-    log_file = resolve_path("${paths.drapolog}", CONFIG)
+    log_file = resolve_path("${drapolog}", CONFIG)
     file_handler = TimedRotatingFileHandler(
         filename=log_file,
         when="midnight",

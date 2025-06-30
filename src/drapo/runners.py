@@ -17,7 +17,7 @@ def run_dbt_command(CONFIG: dict, cmd: list[str], working_dir: str = None):
     Exécute la commande dbt depuis working_dir (ou BASE_DIR si non fourni).
     """
     # s'il n'y a pas de working_dir ou s'il est vide, on utilise BASE_DIR
-    wd = resolve_path("${paths.dbt}", CONFIG)
+    wd = resolve_path("${dbt}", CONFIG)
     logging.info("–> dbt working directory : %s", wd)
     exit_code = stream_subprocess(cmd, cwd=wd)
     if exit_code == 0:
@@ -39,7 +39,7 @@ def install_dependencies(CONFIG: dict):
     """
     
 
-    req_path = resolve_path("${paths.requirements}", CONFIG)
+    req_path = resolve_path("${requirements}", CONFIG)
 
     if not os.path.exists(req_path):
         print(f"Le fichier requirements.txt n'existe pas : {req_path}")
@@ -73,7 +73,7 @@ def update_git_repo(CONFIG: dict,repo_dir: str, branch: str):
     Raises:
         RuntimeError: If the git command fails.
     """
-    rd = resolve_path("${paths.git}", CONFIG)
+    rd = resolve_path("${git}", CONFIG)
     logging.info("→ Updating Git repo in %s to branch %s", rd, branch)
     cmds = [
         ["git", "fetch", "origin", branch],
@@ -104,7 +104,7 @@ def run_python_script(CONFIG: dict,python_interpreter: str, script_path: str, ar
     avec fallback sur sys.executable si le chemin n'est pas valide.
     """
     # 1) Résolution et vérification de l'interpréteur
-    interp = resolve_path("${paths.python_interpreter}", CONFIG)
+    interp = resolve_path("${python_interpreter}", CONFIG)
     if not os.path.isfile(interp):
         logging.warning(
             "Interpreter introuvable (%s), fallback vers %s",
@@ -113,7 +113,7 @@ def run_python_script(CONFIG: dict,python_interpreter: str, script_path: str, ar
         interp = sys.executable
 
     # 2) Résolution et vérification du script
-    script = resolve_path("${paths.python_scripts}", CONFIG)
+    script = resolve_path("${python_scripts}", CONFIG)
     if not script.endswith(".py"):
         logging.error("Le script doit être un fichier Python (.py) : %s", script)
         return

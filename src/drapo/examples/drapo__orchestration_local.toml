@@ -18,7 +18,7 @@ branch   = "main"
 name = "run_python_script"
 type = "python"
 interpreter = "C:\\my_python_projet_dir\\venv\\Scripts\\python.exe"
-script_path = "scripts/main.py"
+script_file = "main.py" # Nom du script situé dans ${paths.python_scripts}
 
 # Run dbt commands
 [[jobs]]

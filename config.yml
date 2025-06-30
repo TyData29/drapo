@@ -2,6 +2,7 @@ project_root: "/home/myproject"
 
 paths:
   drapoconfig : "${project_root}/drapo_config" # path to .toml files defining Drapo orchestration flows
+  drapolog : "${project_root}/drapo_log"
   dbt: "${project_root}/dbt" # dbt_project.yml path
   dbtprofiles : "/home/user/.dbt/profiles.yml"
   python_interpreter : "${project_root}/.venv/Scripts"

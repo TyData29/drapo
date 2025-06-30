@@ -9,6 +9,8 @@ import toml
 import yaml
 import re
 
+CONFIG = load_config("config.yml")
+
 ################################################# CLI Parser #################################################
 def parse_args():
     """
@@ -90,7 +92,7 @@ def resolve_path(path: str, config: dict) -> str:
     """
     Résout un chemin relatif ou avec des variables à partir d'un dictionnaire de config.
     Exemple :
-        resolve_path("${project_root}/dbt", config)
+        resolve_path("${paths.dbt}", config)
     """
     # Si le chemin est absolu, retourne tel quel
     if os.path.isabs(path):
@@ -117,7 +119,7 @@ Module pour charger la configuration d'orchestration depuis un fichier TOML.
 """
 
 def load_orchestration_config(fn: str) -> dict:
-    path = resolve_path(fn)
+    path = resolve_path("${paths.drapoconfig}",CONFIG)
     logging.info("Lecture de la config depuis %s", path)
     with open(path, "r", encoding="utf-8") as f:
         return toml.load(f)
@@ -163,7 +165,7 @@ console_h.setFormatter(console_formatter)
 logger.addHandler(console_h)
 
 # File handler (rotates daily, keeps 30 days)
-log_file = resolve_path("orchestration.log")
+log_file = resolve_path("${paths.drapolog}",CONFIG)
 file_handler = TimedRotatingFileHandler(
     filename=log_file,
     when="midnight",

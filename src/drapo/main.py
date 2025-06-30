@@ -5,18 +5,16 @@ import sys
 import time
 import schedule
 from drapo.utils import *
-from drapo.orchestrer import run_flow, schedule_jobs
-
+from drapo.orchestrer import run_flow
+from drapo.scheduler import schedule_jobs
 
 
 
 ### ============================== Main function ============================== ###
 def main():
     
-    
-
-
-    args = parser.parse_args()
+    # 1. Parse command-line arguments
+    args = parse_args()
 
     # 2. Log startup
     logging.info("---> Starting orchestrator (enforce=%s)...", args.enforce)

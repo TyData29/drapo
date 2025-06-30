@@ -15,9 +15,8 @@ import argparse
 import subprocess
 
 from utils import resolve_path, is_server_reachable
-from runners.runner_python import run_python_script
-from runners.runner_dbt import run_dbt_command
-from runners.runner_git import update_git_repo
+from runners import *
+
 
 
 # === 4. Subprocess streaming -> Log + Console ===

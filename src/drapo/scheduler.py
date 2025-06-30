@@ -12,8 +12,7 @@ schedule_jobs est utilisé pour planifier des flux de travail basés sur la conf
 
 import logging
 import schedule
-from drapo.utils.orchestrer import run_flow
-from drapo.utils import resolve_path
+from drapo.orchestrer import run_flow
 
 
 

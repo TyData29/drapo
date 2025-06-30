@@ -9,7 +9,7 @@ import toml
 import yaml
 import re
 
-CONFIG = load_config("config.yml")
+
 
 ################################################# CLI Parser #################################################
 def parse_args():
@@ -80,6 +80,8 @@ def load_config(config_path: str) -> dict:
         "paths": paths,
         "flows": flows
     }
+
+CONFIG = load_config("../config.yml")
 
 ############################################### Path resolver ###############################################
 """

@@ -4,7 +4,8 @@ import sys
 import subprocess 
 import socket
 import logging
-from drapo.utils import resolve_path, stream_subprocess
+from drapo.utils import resolve_path
+from drapo.common import stream_subprocess
 
 
 ################################################# Runner dbt #################################################

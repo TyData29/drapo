@@ -14,7 +14,7 @@ import logging
 import argparse
 import subprocess
 
-from utils import resolve_path
+from drapo.utils import resolve_path
 from runners import *
 
 

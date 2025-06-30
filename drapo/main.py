@@ -1,0 +1,77 @@
+import os
+import argparse
+import logging
+import sys
+import time
+import schedule
+import drapo.utils as utils
+from drapo.utils.cli_parser import parser
+from drapo.utils.console_logger import logger
+from drapo.utils.path_resolver import resolve_path
+from drapo.utils.toml_parser import load_orchestration_config
+from drapo.utils.orchestrer import run_flow
+from drapo.utils.scheduler import schedule_jobs
+from drapo.utils.config import load_orchestration_config
+
+
+
+### ============================== Main function ============================== ###
+def main():
+    
+    
+
+
+    args = parser.parse_args()
+
+    # 2. Log startup
+    logging.info("---> Starting orchestrator (enforce=%s)...", args.enforce)
+    logging.info(f"Python interpreter in use: {sys.executable}")
+
+    # 3. Choose config file
+    config_file = {
+        "prod": "config/drapo__orchestration_prod.toml",
+        "test": "config/drapo__orchestration_test.toml",
+        "local": "config/drapo__orchestration_local.toml"
+    }[args.env]
+    logging.info("Loading configuration %s", config_file)
+    try:
+        config = load_orchestration_config(fn=config_file)
+    except FileNotFoundError:
+        logging.error("Config file %s not found.", config_file)
+        sys.exit(1)
+    logging.info("Configuration loaded successfully.")
+
+    # 4. Build jobs_map
+    jobs_map = { job["name"]: job for job in config.get("jobs", []) }
+
+    # 5. If enforce, immediately run each flow and exit
+    if args.enforce:
+        logging.info("Enforce mode: running flows immediately (no scheduling).")
+        # find all 'flow' jobs
+        for flow in (j for j in jobs_map.values() if j["type"] == "flow"):
+            logging.info("→ Enforce-running flow '%s'", flow["name"])
+            try:
+                run_flow(python_distrib=sys.executable, steps=flow["steps"], jobs_map=jobs_map)
+            except Exception as e:
+                logging.error("Error in flow %s: %s", flow["name"], e)
+        logging.info("All flows executed in enforce mode. Exiting.")
+        sys.exit(0)
+
+    # 6. Otherwise schedule normally
+    try:
+        schedule_jobs(config)
+    except Exception as e:
+        logging.error("Error scheduling jobs: %s", e)
+        sys.exit(1)
+
+    logging.info("Job scheduling complete. Waiting for executions...")
+    try:
+        while True:
+            schedule.run_pending()
+            time.sleep(60)
+    except KeyboardInterrupt:
+        logging.info("Scheduler interrupted manually.")
+
+
+if __name__ == "__main__":
+    main()

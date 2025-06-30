@@ -1,0 +1,42 @@
+# Try a database connection first
+[[jobs]]
+name = "postgres_test"
+type = "connection"
+host = "127.0.0.1"
+port = 5432
+retry_interval_min = 10
+
+# Do a Git pull to get back the last version of the project
+[[jobs]]
+name = "git_pull_main"
+type = "git"
+repo_dir = "https://github.com/Me/MyProject"   # or wherever your repo lives
+branch   = "main"
+
+# Run a random Python Script
+[[jobs]]
+name = "run_python_script"
+type = "python"
+interpreter = "C:\\my_python_projet_dir\\venv\\Scripts\\python.exe"
+script_path = "scripts/main.py"
+
+# Run dbt commands
+[[jobs]]
+name = "dbt_build"
+type = "dbt"
+cmd = [
+  "dbt", "build",
+  "--target", "prod",
+  "-m", "from_this_model+",
+       "from_that_model_too+"
+]
+
+# ----------------------------------- GLOBAL ORCHESTRATION --------------------------
+
+# Compose and schedule a flow composed of the jobs you defined
+[[jobs]]
+name = "full_flow"
+type = "flow"
+schedule = "daily_at"
+time = "04:00"
+steps = ["postgres_test", "run_python_script", "dbt_build"]

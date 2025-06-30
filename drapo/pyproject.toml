@@ -1,0 +1,19 @@
+[project]
+name = "drapo"
+version = "0.1.0"
+description = "A lightweight orchestrator for dbt, git, and Python scripts"
+authors = [
+    {name = "Olivier Poncelet - TyData", email = "olivier@tydata.fr"}
+]
+requires-python = ">=3.8"
+dependencies = [
+    "toml",
+    "schedule",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+drapo-run = "drapo.orchestration:main"

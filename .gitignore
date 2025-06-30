@@ -1,0 +1,3 @@
+.venv/
+drapo/config/*
+start_orchestration.*

@@ -2,7 +2,7 @@
 # # orchestrer.py
 """
 Module pour orchestrer l'exécution des workflows de jobs Python, dbt et git.
-    stream_subprocess est utilisé pour exécuter des jobs en streaming (avec des logs en temps réel),
+    
     run_flow est la fonction principale qui permet orchestrer les jobs définis dans la configuration.
 
 """
@@ -16,9 +16,6 @@ import subprocess
 
 from utils import resolve_path
 from runners import *
-
-
-
 
 
 def run_flow(python_distrib : str, steps: list[str], jobs_map: dict[str, dict], args: argparse.Namespace):

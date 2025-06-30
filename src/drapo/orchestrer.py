@@ -15,7 +15,7 @@ import argparse
 import subprocess
 
 from drapo.utils import resolve_path
-from runners import *
+from drapo.runners import *
 
 
 def run_flow(python_distrib : str, steps: list[str], jobs_map: dict[str, dict], args: argparse.Namespace):

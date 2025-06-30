@@ -1,0 +1,24 @@
+
+
+# Récupération du dernier état de la branche main du repo Supervision SPAC (projet dbt)
+[[jobs]]
+name = "git_pull_main"
+type = "git"
+repo_dir = "."              # or wherever your repo lives, relative to orchestration.py
+branch   = "main"
+
+
+#  Le script Python test.py
+[[jobs]]
+name = "run_python_test"
+type = "python"
+script_path = "scripts/test.py"
+
+
+# 4) Le flow principal, qui référence les trois étapes ci-dessus
+[[jobs]]
+name = "full_flow"
+type = "flow"
+schedule = "daily_at"
+time = "04:00"
+steps = ["run_python_test"]

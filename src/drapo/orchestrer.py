@@ -50,7 +50,9 @@ def run_flow(python_distrib : str, steps: list[str], jobs_map: dict[str, dict], 
 
         if job["type"] == "python":
             interp = python_distrib if python_distrib else job.get("interpreter", sys.executable)
-            script = resolve_path(job["script_path"])
+            script_path = resolve_path("${paths.python_scripts}",CONFIG)
+            script_file = job["script_file"]
+            script = os.path.join(script_path, script_file) if script_file else job.get("script_path", "")
             args.python_args = args.python_args if hasattr(args, "python_args") else ""
             logging.info("Exécution du script Python %s avec interpréteur %s", script, interp)
             run_python_script(

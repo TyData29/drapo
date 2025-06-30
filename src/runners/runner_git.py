@@ -6,7 +6,7 @@ Module pour exécuter des commandes git.
 
 import os
 import logging
-from drapo.utils import resolve_path, stream_subprocess
+from utils.path_resolver import resolve_path
 
 
 def update_git_repo(repo_dir: str, branch: str):    

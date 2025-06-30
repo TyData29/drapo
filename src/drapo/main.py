@@ -4,14 +4,10 @@ import logging
 import sys
 import time
 import schedule
-import drapo.utils as utils
-from drapo.utils.cli_parser import parser
-from drapo.utils.console_logger import logger
-from drapo.utils.path_resolver import resolve_path
-from drapo.utils.toml_parser import load_orchestration_config
-from drapo.utils.orchestrer import run_flow
-from drapo.utils.scheduler import schedule_jobs
-from drapo.utils.config import load_orchestration_config
+from utils.cli_parser import parser
+from utils.toml_parser import load_orchestration_config
+from orchestrer import run_flow, schedule_jobs
+
 
 
 

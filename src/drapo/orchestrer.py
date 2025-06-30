@@ -14,10 +14,10 @@ import logging
 import argparse
 import subprocess
 
-from drapo.utils import resolve_path, is_server_reachable
-from drapo.runners.runner_python import run_python_script
-from drapo.runners.runner_dbt import run_dbt_command
-from drapo.runners.runner_git import update_git_repo
+from utils import resolve_path, is_server_reachable
+from runners.runner_python import run_python_script
+from runners.runner_dbt import run_dbt_command
+from runners.runner_git import update_git_repo
 
 
 # === 4. Subprocess streaming -> Log + Console ===

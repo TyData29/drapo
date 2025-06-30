@@ -21,9 +21,11 @@ def main():
     logging.info(f"Python interpreter in use: {sys.executable}")
 
     THIS_DIR = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        os.path.join(os.path.dirname(__file__), "..", "..")
     )
     CONFIG_PATH = os.path.join(THIS_DIR, "config.yml")
+
+    print(f"Using config path: {CONFIG_PATH}")
 
     CONFIG = load_config(CONFIG_PATH)
 

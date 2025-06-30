@@ -18,7 +18,7 @@ from drapo.utils import resolve_path
 from drapo.runners import *
 
 
-def run_flow(python_distrib : str, steps: list[str], jobs_map: dict[str, dict], args: argparse.Namespace):
+def run_flow(CONFIG, python_distrib : str, steps: list[str], jobs_map: dict[str, dict], args: argparse.Namespace):
     """
     Orchestrate a sequence of jobs:
      - first step must be a connection check
@@ -55,23 +55,23 @@ def run_flow(python_distrib : str, steps: list[str], jobs_map: dict[str, dict], 
             script = os.path.join(script_path, script_file) if script_file else job.get("script_path", "")
             args.python_args = args.python_args if hasattr(args, "python_args") else ""
             logging.info("Exécution du script Python %s avec interpréteur %s", script, interp)
-            run_python_script(
+            run_python_script(CONFIG,
                 python_interpreter=interp,
                 script_path=script,
                 args=args.python_args if hasattr(args, "python_args") else ""
             )
         elif job["type"] == "dbt":
-            run_dbt_command(
+            run_dbt_command(CONFIG,
                 cmd = job["cmd"] + args.dbt_args.split() if "dbt_args" in args else [],
                 working_dir=job.get("working_dir")
             )
         elif job["type"] == "git":
-            update_git_repo(
+            update_git_repo(CONFIG,
                 repo_dir=job["repo_dir"],
                 branch=job["branch"]
             )
         elif job["type"] == "dependencies":
-            install_dependencies()
+            install_dependencies(CONFIG)
         else:
             logging.error("Type de job non géré: %s", job["type"])
 

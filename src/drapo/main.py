@@ -31,14 +31,14 @@ def main():
 
     logging.info("Loading configuration %s", config_file)
     try:
-        config = load_orchestration_config(fn=config_file)
+        flowconfig = load_orchestration_config(fn=config_file)
     except FileNotFoundError:
         logging.error("Config file %s not found.", config_file)
         sys.exit(1)
     logging.info("Configuration loaded successfully.")
 
     # 4. Build jobs_map
-    jobs_map = { job["name"]: job for job in config.get("jobs", []) }
+    jobs_map = { job["name"]: job for job in flowconfig.get("jobs", []) }
 
     # 5. If enforce, immediately run each flow and exit
     if args.enforce:
@@ -47,7 +47,7 @@ def main():
         for flow in (j for j in jobs_map.values() if j["type"] == "flow"):
             logging.info("→ Enforce-running flow '%s'", flow["name"])
             try:
-                run_flow(python_distrib=sys.executable, steps=flow["steps"], jobs_map=jobs_map)
+                run_flow(CONFIG, python_distrib=sys.executable, steps=flow["steps"], jobs_map=jobs_map)
             except Exception as e:
                 logging.error("Error in flow %s: %s", flow["name"], e)
         logging.info("All flows executed in enforce mode. Exiting.")
@@ -55,7 +55,7 @@ def main():
 
     # 6. Otherwise schedule normally
     try:
-        schedule_jobs(config)
+        schedule_jobs(flowconfig)
     except Exception as e:
         logging.error("Error scheduling jobs: %s", e)
         sys.exit(1)

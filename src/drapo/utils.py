@@ -4,9 +4,9 @@ import argparse
 import os
 import sys
 import logging
-from logging.handlers import TimedRotatingFileHandler
-import toml
 import yaml
+import toml
+from logging.handlers import TimedRotatingFileHandler
 import re
 
 
@@ -120,7 +120,7 @@ def resolve_path(path: str, config: dict) -> str:
 Module pour charger la configuration d'orchestration depuis un fichier TOML.
 """
 
-def load_orchestration_config(fn: str) -> dict:
+def load_orchestration_config(CONFIG,fn: str) -> dict:
     path = resolve_path("${paths.drapoconfig}",CONFIG)
     logging.info("Lecture de la config depuis %s", path)
     with open(path, "r", encoding="utf-8") as f:
@@ -129,7 +129,7 @@ def load_orchestration_config(fn: str) -> dict:
 
 ########################################## Console logger ##########################################
 
-def setup_logger(config: dict):
+def setup_logger(CONFIG):
     """
     Initialise le logger avec la config YAML passée en argument.
     """
@@ -164,7 +164,7 @@ def setup_logger(config: dict):
     logger.addHandler(console_h)
 
     # File handler (rotates daily, keeps 30 days)
-    log_file = resolve_path("${paths.drapolog}", config)
+    log_file = resolve_path("${paths.drapolog}", CONFIG)
     file_handler = TimedRotatingFileHandler(
         filename=log_file,
         when="midnight",

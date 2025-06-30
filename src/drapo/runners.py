@@ -4,17 +4,15 @@ import sys
 import subprocess 
 import socket
 import logging
-import yaml
-from drapo.utils import load_config, resolve_path
+from drapo.utils import resolve_path
 from drapo.common import stream_subprocess
 
-CONFIG = load_config("config.yml")
 
 ################################################# Runner dbt #################################################
 """
 Module pour exécuter des commandes dbt.
 """
-def run_dbt_command(cmd: list[str], working_dir: str = None):
+def run_dbt_command(CONFIG: dict, cmd: list[str], working_dir: str = None):
     """
     Exécute la commande dbt depuis working_dir (ou BASE_DIR si non fourni).
     """
@@ -35,7 +33,7 @@ Module pour vérifier et installer les dépendances du projet parent orchestré 
 # If the script is run in a virtual environment, it will install the dependencies in the virtual environment.
 # If the script is run in a Docker container, it will install the dependencies in the container.
 # If the script is run in a GitHub Actions workflow, it will install the dependencies in the workflow.
-def install_dependencies():
+def install_dependencies(CONFIG: dict):
     """
     Installe les dépendances définies dans le fichier de requirements pointé par config.yml
     """
@@ -62,7 +60,7 @@ def install_dependencies():
 """
 Module pour exécuter des commandes git.
 """
-def update_git_repo(repo_dir: str, branch: str):    
+def update_git_repo(CONFIG: dict,repo_dir: str, branch: str):    
     """
     Update the git repository in repo_dir to the specified branch.
     On Windows, this function does not update the repository and returns immediately.
@@ -100,7 +98,7 @@ def update_git_repo(repo_dir: str, branch: str):
 """
 Module pour exécuter des scripts python.
 """
-def run_python_script(python_interpreter: str, script_path: str, args: str = ""):
+def run_python_script(CONFIG: dict,python_interpreter: str, script_path: str, args: str = ""):
     """
     Exécute un script Python via l'interpréteur donné,
     avec fallback sur sys.executable si le chemin n'est pas valide.
@@ -143,7 +141,7 @@ def run_python_script(python_interpreter: str, script_path: str, args: str = "")
 """
 Module pour tester la connectivité d'un serveur via TCP.
 """
-def is_server_reachable(ip: str, port: int, timeout: float = 5.0) -> bool:
+def is_server_reachable(CONFIG: dict, ip: str, port: int, timeout: float = 5.0) -> bool:
     """
     Teste une connexion TCP; retourne True en cas de succès, False sinon.
     """

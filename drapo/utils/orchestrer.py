@@ -20,13 +20,6 @@ from drapo.runners.runner_dbt import run_dbt_command
 from drapo.runners.runner_git import update_git_repo
 
 
-# Base directory for relative paths
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Ensure the base directory is in the system path for module imports
-if BASE_DIR not in sys.path:
-    sys.path.append(BASE_DIR)
-
-
 # === 4. Subprocess streaming -> Log + Console ===
 def stream_subprocess(cmd: list[str], cwd: str | None = None, args : list | None = None) -> int:
     """

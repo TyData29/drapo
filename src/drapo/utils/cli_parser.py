@@ -28,3 +28,6 @@ def parse_args():
     #parser.add_argument("--python-interpreter", default=sys.executable) # Interpréteur Python à utiliser
     #parser.add_argument("--python-script", default="") # Chemin du script Python à exécuter
     #parser.add_argument("--python-args", default="") # Arguments à passer au script Python
+
+def parser() : 
+    parse_args

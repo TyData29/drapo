@@ -4,9 +4,9 @@ import logging
 import sys
 import time
 import schedule
-from utils.cli_parser import parser
-from utils.toml_parser import load_orchestration_config
-from orchestrer import run_flow, schedule_jobs
+from drapo.utils.cli_parser import parser
+from drapo.utils.toml_parser import load_orchestration_config
+from drapo.orchestrer import run_flow, schedule_jobs
 
 
 

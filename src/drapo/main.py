@@ -21,6 +21,7 @@ def main():
     logging.info(f"Python interpreter in use: {sys.executable}")
 
     CONFIG = load_config("config.yml")
+    logger = setup_logger(CONFIG)
 
     # Accès aux fichiers de flows
     FLOWS = CONFIG["flows"]

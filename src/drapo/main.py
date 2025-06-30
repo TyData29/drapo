@@ -20,7 +20,11 @@ def main():
     logging.info("---> Starting orchestrator (enforce=%s)...", args.enforce)
     logging.info(f"Python interpreter in use: {sys.executable}")
 
-    CONFIG = load_config("config.yml")
+    THIS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    CONFIG_PATH = os.path.join(THIS_DIR, "config.yml")
+
+    CONFIG = load_config(CONFIG_PATH)
+
     logger = setup_logger(CONFIG)
 
     # Accès aux fichiers de flows

@@ -6,7 +6,8 @@ import sys
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import toml
-
+import yaml
+import re
 
 ################################################# CLI Parser #################################################
 def parse_args():
@@ -39,31 +40,76 @@ def parse_args():
 
     return parser.parse_args()
 
+############################################### load_config ###############################################
+"""
+Module de chargement du fichier de configuration utilisé par Drapo
+"""
+
+def load_config(config_path: str) -> dict:
+    """
+    Charge le fichier YAML et résout les variables ${...}
+    """
+    with open(config_path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+
+    # Stocke les variables connues (project_root + paths)
+    variables = {}
+    variables["project_root"] = data["project_root"]
+
+    # Commence par substituer project_root dans paths
+    paths = {}
+    for k, v in data["paths"].items():
+        if isinstance(v, str):
+            paths[k] = v.replace("${project_root}", data["project_root"])
+    variables.update(paths)
+
+    # Substitue dans flows
+    flows = {}
+    for k, v in data["flows"].items():
+        resolved = v
+        # Remplace toutes les occurrences ${...}
+        matches = re.findall(r"\$\{(.+?)\}", v)
+        for var in matches:
+            resolved = resolved.replace("${" + var + "}", variables[var])
+        flows[k] = resolved
+
+    return {
+        "project_root": data["project_root"],
+        "paths": paths,
+        "flows": flows
+    }
+
 ############################################### Path resolver ###############################################
 """
 Module utilitaire pour résoudre les chemins de fichiers dans Drapo.
-Il permet de convertir des chemins relatifs en chemins absolus basés sur le répertoire du script.
+Il permet d'exploiter les paths définis dans config.yml'
 """
 
 
-
-
-# === 1. Helpers for path resolution ===
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-#print(f"Répertoire de base du script : {BASE_DIR}")
-# Ensure the base directory is in the system path for module imports
-if BASE_DIR not in sys.path:
-    sys.path.append(BASE_DIR)
-
-
-def resolve_path(path: str) -> str:
+def resolve_path(path: str, config: dict) -> str:
     """
-    Si `path` est déjà absolu, le renvoyer tel quel.
-    Sinon, le considérer relatif à BASE_DIR.
+    Résout un chemin relatif ou avec des variables à partir d'un dictionnaire de config.
+    Exemple :
+        resolve_path("${project_root}/dbt", config)
     """
+    # Si le chemin est absolu, retourne tel quel
     if os.path.isabs(path):
         return path
-    return os.path.join(BASE_DIR, path)
+
+    # Remplace les variables ${...}
+    variables = {"project_root": config.get("project_root", "")}
+    variables.update(config.get("paths", {}))
+    variables.update(config.get("flows", {}))
+
+    resolved = path
+    matches = re.findall(r"\$\{(.+?)\}", path)
+    for var in matches:
+        if var not in variables:
+            raise ValueError(f"Variable '{var}' inconnue dans le chemin: {path}")
+        resolved = resolved.replace("${" + var + "}", variables[var])
+
+    # Normalise et absolutise
+    return os.path.abspath(resolved)
 
 ############################################### TOML Parser ###############################################
 """

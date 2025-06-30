@@ -4,9 +4,11 @@ import sys
 import subprocess 
 import socket
 import logging
-from drapo.utils import resolve_path
+import yaml
+from drapo.utils import load_config, resolve_path
 from drapo.common import stream_subprocess
 
+CONFIG = load_config("config.yml")
 
 ################################################# Runner dbt #################################################
 """
@@ -17,7 +19,7 @@ def run_dbt_command(cmd: list[str], working_dir: str = None):
     Exécute la commande dbt depuis working_dir (ou BASE_DIR si non fourni).
     """
     # s'il n'y a pas de working_dir ou s'il est vide, on utilise BASE_DIR
-    wd = resolve_path(working_dir if working_dir else ".")
+    wd = resolve_path("${paths.dbt}", CONFIG)
     logging.info("–> dbt working directory : %s", wd)
     exit_code = stream_subprocess(cmd, cwd=wd)
     if exit_code == 0:
@@ -35,29 +37,25 @@ Module pour vérifier et installer les dépendances du projet parent orchestré 
 # If the script is run in a GitHub Actions workflow, it will install the dependencies in the workflow.
 def install_dependencies():
     """
-    Installs dependencies for the parent project orchestrated by Drapo.
+    Installe les dépendances définies dans le fichier de requirements pointé par config.yml
     """
-    # Determine the script name and path
-    script_name = os.path.basename(__file__)
-    script_path = os.path.dirname(os.path.abspath(__file__))
-    parent_dir = os.path.dirname(script_path)
+    
 
-    # Determine the install script based on the operating system
-    if sys.platform.startswith('win'):
-        install_script = os.path.join(parent_dir, 'install.bat')
-    else:
-        install_script = os.path.join(parent_dir, 'install.sh')
-    # Check if the install script exists
-    if not os.path.exists(install_script):
-        print(f"Install script {install_script} not found.")
+    req_path = resolve_path("${paths.requirements}", CONFIG)
+
+    if not os.path.exists(req_path):
+        print(f"Le fichier requirements.txt n'existe pas : {req_path}")
         sys.exit(1)
-    # Run the install script
+
+    # Exécute pip install -r
+    cmd = [sys.executable, "-m", "pip", "install", "-r", req_path]
+
+    print(f"Installation des dépendances depuis {req_path} ...")
     try:
-        print(f"Running install script: {install_script}")
-        subprocess.run([install_script], check=True, shell=True)
-        print("Dependencies installed successfully.")
+        subprocess.run(cmd, check=True)
+        print("✅ Dépendances installées avec succès.")
     except subprocess.CalledProcessError as e:
-        print(f"Error running install script: {e}")
+        print(f"❌ Erreur lors de l'installation des dépendances: {e}")
         sys.exit(1)
 
 ################################################# Runner git #################################################
@@ -77,7 +75,7 @@ def update_git_repo(repo_dir: str, branch: str):
     Raises:
         RuntimeError: If the git command fails.
     """
-    rd = resolve_path(repo_dir)
+    rd = resolve_path("${paths.git}", CONFIG)
     logging.info("→ Updating Git repo in %s to branch %s", rd, branch)
     cmds = [
         ["git", "fetch", "origin", branch],
@@ -108,7 +106,7 @@ def run_python_script(python_interpreter: str, script_path: str, args: str = "")
     avec fallback sur sys.executable si le chemin n'est pas valide.
     """
     # 1) Résolution et vérification de l'interpréteur
-    interp = resolve_path(python_interpreter)
+    interp = resolve_path("${paths.python_interpreter}", CONFIG)
     if not os.path.isfile(interp):
         logging.warning(
             "Interpreter introuvable (%s), fallback vers %s",
@@ -117,7 +115,7 @@ def run_python_script(python_interpreter: str, script_path: str, args: str = "")
         interp = sys.executable
 
     # 2) Résolution et vérification du script
-    script = resolve_path(script_path)
+    script = resolve_path("${paths.python_scripts}", CONFIG)
     if not script.endswith(".py"):
         logging.error("Le script doit être un fichier Python (.py) : %s", script)
         return

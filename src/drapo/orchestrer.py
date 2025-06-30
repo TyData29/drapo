@@ -68,6 +68,8 @@ def run_flow(python_distrib : str, steps: list[str], jobs_map: dict[str, dict], 
                 repo_dir=job["repo_dir"],
                 branch=job["branch"]
             )
+        elif job["type"] == "dependencies":
+            install_dependencies()
         else:
             logging.error("Type de job non géré: %s", job["type"])
 

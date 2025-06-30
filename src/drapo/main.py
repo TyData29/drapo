@@ -20,12 +20,14 @@ def main():
     logging.info("---> Starting orchestrator (enforce=%s)...", args.enforce)
     logging.info(f"Python interpreter in use: {sys.executable}")
 
+    CONFIG = load_config("config.yml")
+
+    # Accès aux fichiers de flows
+    FLOWS = CONFIG["flows"]
+
     # 3. Choose config file
-    config_file = {
-        "prod": "config/drapo__orchestration_prod.toml",
-        "test": "config/drapo__orchestration_test.toml",
-        "local": "config/drapo__orchestration_local.toml"
-    }[args.env]
+    config_file = FLOWS[f"{args.env}"]
+
     logging.info("Loading configuration %s", config_file)
     try:
         config = load_orchestration_config(fn=config_file)

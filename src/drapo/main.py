@@ -20,7 +20,9 @@ def main():
     logging.info("---> Starting orchestrator (enforce=%s)...", args.enforce)
     logging.info(f"Python interpreter in use: {sys.executable}")
 
-    THIS_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    THIS_DIR = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "..")
+    )
     CONFIG_PATH = os.path.join(THIS_DIR, "config.yml")
 
     CONFIG = load_config(CONFIG_PATH)

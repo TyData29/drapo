@@ -37,8 +37,7 @@ def parse_args():
     #parser.add_argument("--python-script", default="") # Chemin du script Python à exécuter
     #parser.add_argument("--python-args", default="") # Arguments à passer au script Python
 
-def parser() : 
-    parse_args
+    return parser.parse_args()
 
 ############################################### Path resolver ###############################################
 """

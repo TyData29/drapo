@@ -1,0 +1,15 @@
+project_root: "/home/myproject"
+
+paths:
+  drapoconfig : "${project_root}/drapo_config" # path to .toml files defining Drapo orchestration flows
+  dbt: "${project_root}/dbt" # dbt_project.yml path
+  dbtprofiles : "/home/user/.dbt/profiles.yml"
+  python_interpreter : "${project_root}/.venv/Scripts"
+  python_scripts: "${project_root}/scripts" # python scripts to orchestrate path
+  git_repo: "${project_root}"
+  project_requirements : ${project_root}/install/requirements.txt
+
+flows:
+  test : "${drapoconfig}/drapo__orchestration_test.toml"
+  local : "${drapoconfig}/drapo__orchestration_local.toml"
+  prod : "${drapoconfig}/drapo__orchestration_prod.toml"
